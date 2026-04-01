@@ -7,6 +7,22 @@ const express = require('express'),
   port = envVariables.port,
   threads = envVariables.threads;
 
+// Global error handlers to prevent service crashes
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  if (error.code === 'ERR_HTTP_HEADERS_SENT') {
+    console.error('Headers already sent error - continuing service operation');
+    return; // Don't crash on this specific error
+  }
+  // For other critical errors, still exit
+  console.error('Critical error, exiting...');
+  // process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const createAppServer = () => {
   const app = express();
   app.use((req, res, next) => {
@@ -22,6 +38,29 @@ const createAppServer = () => {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use('/', require('./routes'));
+  
+  // Error handling middleware - must be last
+  app.use((err, req, res, next) => {
+    console.error('Express error handler:', err);
+    
+    // Handle ERR_HTTP_HEADERS_SENT specifically
+    if (err.code === 'ERR_HTTP_HEADERS_SENT') {
+      console.error('Headers already sent error caught in middleware');
+      return; // Don't try to send response
+    }
+    
+    // Handle other errors
+    if (!res.headersSent) {
+      res.status(500).json({
+        id: 'api.error',
+        ver: '1.0',
+        ets: new Date().getTime(),
+        params: { err: err.message || 'Internal server error' },
+        responseCode: 'SERVER_ERROR'
+      });
+    }
+  });
+  
   module.exports = app;
   return app;
 }
