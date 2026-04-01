@@ -65,6 +65,13 @@ class TelemetryService {
             if (err) {
                 console.log('error', err);
                 console.log('Complete event details:', JSON.stringify(req.body, null, 2));
+                // TODO: To skip large size edata 
+                // Create a copy of req.body without the edata object to reduce log size
+                // const eventDetailsForLog = { ...req.body };
+                // if (eventDetailsForLog.edata) {
+                //     eventDetailsForLog.edata = '[edata object removed from log]';
+                // }
+                // console.log('Complete event details:', JSON.stringify(eventDetailsForLog, null, 2));
                 this.sendError(res, { id: 'api.telemetry', params: { err: err } });
             }
             else {
