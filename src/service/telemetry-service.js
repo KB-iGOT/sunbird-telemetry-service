@@ -56,8 +56,15 @@ class TelemetryService {
     }
     getRequestCallBack(req, res) {
         return (err, data) => {
+            // Check if response was already sent
+            if (res.headersSent) {
+                console.log('Response already sent, skipping duplicate response');
+                return;
+            }
+            
             if (err) {
                 console.log('error', err);
+                console.log('Complete event details:', JSON.stringify(req.body, null, 2));
                 this.sendError(res, { id: 'api.telemetry', params: { err: err } });
             }
             else {
@@ -73,6 +80,7 @@ class TelemetryService {
             params: options.params || {},
             responseCode: options.responseCode || 'SERVER_ERROR'
         }
+        console.log('Error response:', JSON.stringify(resObj, null, 2));
         res.status(500);
         res.json(resObj);
     }

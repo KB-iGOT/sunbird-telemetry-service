@@ -1,0 +1,31 @@
+{
+  "eid": "INTERACT",
+  "ets": 1638360000000,
+  "ver": "3.0",
+  "mid": "INTERACT:1638360000000:67890",
+  "actor": {
+    "id": "user456",
+    "type": "User"
+  },
+  "context": {
+    "channel": "sunbird",
+    "pdata": {
+      "id": "sunbird.app",
+      "ver": "1.0",
+      "pid": "sunbird.app.contentplayer"
+    },
+    "env": "contentplayer",
+    "sid": "session456",
+    "did": "device456"
+  },
+  "object": {
+    "id": "content456",
+    "type": "Content",
+    "ver": "1.0"
+  },
+  "edata": {
+    "id": "large-data",
+    "type": "LARGE_DATA",
+    "largePayload": "LARGE_DATA_PLACEHOLDER"
+  }
+}
